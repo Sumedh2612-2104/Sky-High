@@ -11,12 +11,10 @@ import { player, resetPlayer, drawPlayer } from "./player.js";
 
 // ===== FOR MOBILE FEUTURES =====
 
-let touchStartX = 0;
-let touchStartY = 0;
-let touchEndX = 0;
-let touchEndY = 0;
-
-const SWIPE_THRESHOLD = 30; 
+const leftBtn = document.getElementById("leftBtn");
+const rightBtn = document.getElementById("rightBtn");
+const jumpBtn = document.getElementById("jumpBtn"); 
+const retryBtn = document.getElementById("retryBtn");
 
 // ===== CANVAS =====
 const canvas = document.getElementById("gameCanvas");
@@ -294,44 +292,19 @@ function checkStarCollision() {
   });
 }
 
-window.addEventListener("touchstart", (e) => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-});
+leftBtn.addEventListener("touchstart", () => keys["a"] = true);
+leftBtn.addEventListener("touchend", () => keys["a"] = false);
 
-window.addEventListener("touchmove", (e) => {
-  // optional: prevent scrolling
-  e.preventDefault();
-}, { passive: false });
+rightBtn.addEventListener("touchstart", () => keys["d"] = true);
+rightBtn.addEventListener("touchend", () => keys["d"] = false);
 
-window.addEventListener("touchend", (e) => {
-  touchEndX = e.changedTouches[0].clientX;
-  touchEndY = e.changedTouches[0].clientY;
-
-  handleSwipe();
-});
-
-function handleSwipe() {
-  const deltaX = touchEndX - touchStartX;
-  const deltaY = touchEndY - touchStartY;
-
-  // Horizontal swipe
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-    if (deltaX > SWIPE_THRESHOLD) {
-      keys["d"] = true;  // swipe right → move right
-      setTimeout(() => keys["d"] = false, 100); // short press
-    } else if (deltaX < -SWIPE_THRESHOLD) {
-      keys["a"] = true;  // swipe left → move left
-      setTimeout(() => keys["a"] = false, 100);
-    }
-  } else {
-    // Vertical swipe
-    if (deltaY < -SWIPE_THRESHOLD) {
-      // swipe up → jump
-      if (player.isOnGround) {
-        player.velocityY = player.jumpForce;
-        player.isOnGround = false;
-      }
-    }
+jumpBtn.addEventListener("touchstart", () => {
+  if (player.isOnGround) {
+    player.velocityY = player.jumpForce;
+    player.isOnGround = false;
   }
-}
+});
+
+retryBtn.addEventListener("touchstart", () => {
+  loadLevel(currentLevel); // restart current level
+});

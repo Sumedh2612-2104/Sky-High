@@ -70,3 +70,24 @@
 .star-ui.collected {
   color: gold;
 }
+
+.touch-controls {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none; /* allow clicks only on buttons */
+}
+
+.touch-btn {
+  pointer-events: all; /* enable button interaction */
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid #fff;
+  font-size: 24px;
+  color: white;
+  text-align: center;
+}
