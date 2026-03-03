@@ -9,17 +9,17 @@ import {
 
 import { player, resetPlayer, drawPlayer } from "./player.js";
 
-// ===== FOR MOBILE FEUTURES =====
-
-const leftBtn = document.getElementById("leftBtn");
-const rightBtn = document.getElementById("rightBtn");
-const jumpBtn = document.getElementById("jumpBtn"); 
-const retryBtn = document.getElementById("retryBtn");
-
 // ===== CANVAS =====
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const starUIElements = document.querySelectorAll(".star-ui");
+
+// ===== MOBILE TOUCH BUTTONS =====
+const leftBtn = document.getElementById("leftBtn");
+const rightBtn = document.getElementById("rightBtn");
+const jumpBtn = document.getElementById("jumpBtn"); 
+const retryBtn = document.getElementById("retryBtn");
+const touchControls = document.getElementById("touchControls");
 
 // ===== GAME STATE =====
 let currentLevel = 1;
@@ -32,7 +32,7 @@ let keys = {};
 let goal = null;
 let gameState = "playing";
 
-// Camera control constant (no magic numbers)
+// Camera constant
 const CAMERA_OFFSET_Y = canvas.height / 2;
 
 // ===== LEVEL LOADING =====
@@ -41,14 +41,14 @@ function loadLevel(levelNumber) {
   if (!level) return;
 
   stars = (level.stars || []).map(star => ({
-  x: star.x,
-  y: star.y,
-  collected: false
-}));
+    x: star.x,
+    y: star.y,
+    collected: false
+  }));
+  
   score = 0;
-  starUIElements.forEach(el => {
-  el.classList.remove("collected");
-});
+  starUIElements.forEach(el => el.classList.remove("collected"));
+
   currentLevel = levelNumber;
   goal = level.goal;
 
@@ -64,27 +64,20 @@ function loadLevel(levelNumber) {
   gameState = "playing";
 }
 
-// ===== PLAYER DEATH =====
-function killPlayer() {
-  if (gameState !== "playing") return;
-  gameState = "dead";
-}
-
 // ===== INPUT SYSTEM =====
 function setupInput() {
-
+  // Desktop keyboard
   window.addEventListener("keydown", (e) => {
     const key = e.key.toLowerCase();
     keys[key] = true;
 
+    // Retry after death
     if (gameState === "dead" && key === "r") {
       loadLevel(currentLevel);
     }
 
-    if (
-      (key === " " || key === "arrowup" || key === "w") &&
-      player.isOnGround
-    ) {
+    // Jump
+    if ((key === " " || key === "arrowup" || key === "w") && player.isOnGround) {
       player.velocityY = player.jumpForce;
       player.isOnGround = false;
     }
@@ -93,16 +86,32 @@ function setupInput() {
   window.addEventListener("keyup", (e) => {
     keys[e.key.toLowerCase()] = false;
   });
-}
-// ===== UPDATE SYSTEMS =====
-function handleMovement() {
-  if (keys["arrowleft"] || keys["a"]) {
-    player.x -= player.speedX;
-  }
 
-  if (keys["arrowright"] || keys["d"]) {
-    player.x += player.speedX;
+  // Mobile touch buttons
+  if (leftBtn && rightBtn && jumpBtn && retryBtn) {
+    leftBtn.addEventListener("touchstart", () => keys["a"] = true);
+    leftBtn.addEventListener("touchend", () => keys["a"] = false);
+
+    rightBtn.addEventListener("touchstart", () => keys["d"] = true);
+    rightBtn.addEventListener("touchend", () => keys["d"] = false);
+
+    jumpBtn.addEventListener("touchstart", () => {
+      if (player.isOnGround) {
+        player.velocityY = player.jumpForce;
+        player.isOnGround = false;
+      }
+    });
+
+    retryBtn.addEventListener("touchstart", () => {
+      loadLevel(currentLevel);
+    });
   }
+}
+
+// ===== MOVEMENT & CAMERA =====
+function handleMovement() {
+  if (keys["arrowleft"] || keys["a"]) player.x -= player.speedX;
+  if (keys["arrowright"] || keys["d"]) player.x += player.speedX;
 }
 
 function applyGravity() {
@@ -116,62 +125,35 @@ function updateCamera() {
   }
 }
 
-// ===== MAIN UPDATE =====
+// ===== UPDATE LOOP =====
 function update() {
   if (gameState !== "playing") return;
 
   handleMovement();
+  applyGravity();
 
-  // APPLY GRAVITY FIRST
-  player.velocityY += player.gravity;
-
-  // THEN check collision BEFORE moving fully
   checkPlatformCollision(player, platforms);
-
-  // THEN update position
-  player.y += player.velocityY;
-
   checkObstacleCollision(player, obstacles, killPlayer);
 
-  // Fall detection
-if (player.y > canvas.height + 200) {
-  killPlayer();
-}
+  if (player.y > canvas.height + 200) killPlayer();
+
   checkStarCollision();
   checkGoalCollision();
   updateCamera();
 }
+
 // ===== DRAW SYSTEM =====
-
-
-function drawDeathScreen() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "white";
-  ctx.font = "28px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("You Died", canvas.width / 2, canvas.height / 2 - 20);
-  ctx.fillText("Press R to Retry", canvas.width / 2, canvas.height / 2 + 20);
-}
-
 function draw() {
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawPlatforms(ctx, platforms, cameraY);
-drawObstacles(ctx, obstacles, cameraY);
-drawStars();
-drawGoal();
-drawPlayer(ctx, cameraY);
+  drawObstacles(ctx, obstacles, cameraY);
+  drawStars();
+  drawGoal();
+  drawPlayer(ctx, cameraY);
 
- if (gameState === "dead") {
-  drawOverlayScreen("You Died", "Press R to Retry");
-}
-
-if (gameState === "won") {
-  drawOverlayScreen("Level Complete!", " Congratulations!");
-}
+  if (gameState === "dead") drawOverlayScreen("You Died", "Press R to Retry");
+  if (gameState === "won") drawOverlayScreen("Level Complete!", "Congratulations!");
 }
 
 // ===== GAME LOOP =====
@@ -185,15 +167,21 @@ function gameLoop() {
 export function initGame(levelNumber = 1) {
   setupInput();
   loadLevel(levelNumber);
+  updateTouchControlsVisibility();
   gameLoop();
 }
 
+// ===== PLAYER DEATH =====
+function killPlayer() {
+  if (gameState !== "playing") return;
+  gameState = "dead";
+}
 
+// ===== GOAL =====
 function drawGoal() {
   if (!goal) return;
 
   const screenY = goal.y - cameraY;
-
   ctx.fillStyle = "lime";
   ctx.fillRect(goal.x, screenY, goal.width, goal.height);
 
@@ -204,7 +192,6 @@ function drawGoal() {
 
 function checkGoalCollision() {
   if (!goal) return;
-
   if (
     player.x < goal.x + goal.width &&
     player.x + player.width > goal.x &&
@@ -215,66 +202,24 @@ function checkGoalCollision() {
   }
 }
 
-function drawWinScreen() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  ctx.fillStyle = "lime";
-  ctx.font = "28px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("Level Complete!", canvas.width / 2, canvas.height / 2);
-
-  const collected = stars.filter(s => s.collected).length;
-
-   ctx.font = "20px Arial";
-  ctx.fillText(collected + " / 3 Stars", canvas.width / 2, canvas.height / 2 + 20);
-}
-
-function drawOverlayScreen(title, subtitle) {
-  ctx.save();
-
-  ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "white";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-
-  ctx.font = "32px Arial";
-  ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 20);
-
-  ctx.font = "18px Arial";
-  ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 20);
-
-  ctx.restore();
-}
-
+// ===== STARS =====
 function drawStars() {
   stars.forEach(star => {
     if (star.collected) return;
 
     const screenY = star.y - cameraY;
-
     ctx.fillStyle = "yellow";
     ctx.beginPath();
-    ctx.arc(
-      star.x + 5,   // center properly
-      screenY + 5,
-      6,
-      0,
-      Math.PI * 2
-    );
+    ctx.arc(star.x + 5, screenY + 5, 6, 0, Math.PI * 2);
     ctx.fill();
   });
 }
 
 function checkStarCollision() {
   stars.forEach((star, index) => {
-
     if (star.collected) return;
 
     const starSize = 10;
-
     const collision =
       player.x < star.x + starSize &&
       player.x + player.width > star.x &&
@@ -283,28 +228,52 @@ function checkStarCollision() {
 
     if (collision) {
       star.collected = true;
-
-      // ⭐ UPDATE UI
-      if (starUIElements[index]) {
-        starUIElements[index].classList.add("collected");
-      }
+      if (starUIElements[index]) starUIElements[index].classList.add("collected");
     }
   });
 }
 
-leftBtn.addEventListener("touchstart", () => keys["a"] = true);
-leftBtn.addEventListener("touchend", () => keys["a"] = false);
+// ===== OVERLAYS =====
+function drawOverlayScreen(title, subtitle) {
+  ctx.save();
+  ctx.fillStyle = "rgba(0,0,0,0.8)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-rightBtn.addEventListener("touchstart", () => keys["d"] = true);
-rightBtn.addEventListener("touchend", () => keys["d"] = false);
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "32px Arial";
+  ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 20);
 
-jumpBtn.addEventListener("touchstart", () => {
-  if (player.isOnGround) {
-    player.velocityY = player.jumpForce;
-    player.isOnGround = false;
-  }
-});
+  ctx.font = "18px Arial";
+  ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 20);
+  ctx.restore();
+}
 
-retryBtn.addEventListener("touchstart", () => {
-  loadLevel(currentLevel); // restart current level
-});
+// ===== WIN SCREEN =====
+function drawWinScreen() {
+  ctx.fillStyle = "rgba(0,0,0,0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "lime";
+  ctx.font = "28px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Level Complete!", canvas.width / 2, canvas.height / 2);
+
+  const collected = stars.filter(s => s.collected).length;
+  ctx.font = "20px Arial";
+  ctx.fillText(collected + " / 3 Stars", canvas.width / 2, canvas.height / 2 + 20);
+}
+
+// ===== MOBILE TOUCH VISIBILITY =====
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+function updateTouchControlsVisibility() {
+  if (!touchControls) return;
+  touchControls.style.display = isMobile() ? "flex" : "none";
+}
+
+// Update on resize
+window.addEventListener("resize", updateTouchControlsVisibility);
