@@ -91,3 +91,20 @@
   color: white;
   text-align: center;
 }
+
+/* Default: hidden on desktop */
+#touchControls {
+  display: none;
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  justify-content: space-around;
+  pointer-events: auto;
+}
+
+/* Show on mobile (adjust breakpoint as needed) */
+@media (max-width: 768px) {
+  #touchControls {
+    display: flex;
+  }
+}

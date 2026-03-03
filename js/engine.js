@@ -130,11 +130,18 @@ function update() {
   if (gameState !== "playing") return;
 
   handleMovement();
-  applyGravity();
 
-  checkPlatformCollision(player, platforms);
+  // Apply gravity
+  player.velocityY += player.gravity;
+
+  // Check collisions
+  checkPlatformCollision(player, platforms); // adjusts velocityY
   checkObstacleCollision(player, obstacles, killPlayer);
 
+  // Move player after collisions
+  player.y += player.velocityY;
+
+  // Fall detection
   if (player.y > canvas.height + 200) killPlayer();
 
   checkStarCollision();
