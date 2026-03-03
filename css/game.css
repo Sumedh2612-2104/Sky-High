@@ -1,0 +1,72 @@
+.game-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+#gameContainer {
+    width: 100%;
+  height: 600px;
+  background: black;
+  position: relative;
+  flex: 1;
+  background: #111;
+  border-radius: 15px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+}
+
+#goalContainer {
+  position: absolute;
+  right: 80px;
+  bottom: 150px;
+  height: 300px;
+  width: 40px;
+}
+
+#pole {
+  width: 6px;
+  height: 100%;
+  background: white;
+  margin: auto;
+}
+
+#flag {
+  position: absolute;
+  left: 6px;
+  bottom: 0; /* starts at bottom */
+  width: 40px;
+  height: 25px;
+  background: red;
+  border-radius: 3px;
+  transition: bottom 1s ease-in-out;
+}
+
+/* Waving animation */
+@keyframes wave {
+  0% { transform: skewY(0deg); }
+  50% { transform: skewY(5deg); }
+  100% { transform: skewY(0deg); }
+}
+
+.flag-wave {
+  animation: wave 0.6s infinite ease-in-out;
+}
+
+.star-ui {
+  font-size: 22px;
+  color: gray;
+  margin: 0 3px;
+  transition: color 0.2s ease;
+}
+
+.star-ui.collected {
+  color: gold;
+}

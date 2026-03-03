@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Falling Descent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+
+  <!-- START SCREEN -->
+  <div id="start" class="screen active">
+    <div class="start-container">
+      <h1 class="logo">FALLING DESCENT</h1>
+
+      <div class="menu-buttons">
+        <button id="instructionsBtn">Instructions</button>
+        <button id="startBtn" class="primary">Start</button>
+        <button id="settingsBtn">Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings" class="screen">
+    <div class="card">
+      <h2>Settings</h2>
+
+      <div class="setting-item">
+        <label>Sound</label>
+        <button id="soundToggle">ON</button>
+      </div>
+
+      <div class="setting-item">
+        <label>Theme</label>
+        <button id="themeToggle">Dark</button>
+      </div>
+
+      <div class="setting-item">
+        <label>Login</label>
+        <button disabled>Google (Soon)</button>
+      </div>
+
+      <button class="backBtn">Back</button>
+    </div>
+  </div>
+
+  <!-- INSTRUCTIONS -->
+  <div id="instructions" class="screen">
+    <div class="card">
+      <h2>How To Play</h2>
+
+      <ul class="instruction-list">
+        <li>Move left & right while falling.</li>
+        <li>Reach the bottom to clear the level.</li>
+        <li>Collect up to 3 stars.</li>
+        <li>You have only 3 lives.</li>
+        <li>Not every platform is safe.</li>
+      </ul>
+
+      <div class="about-section">
+        <h3>About</h3>
+        <p>Vertical Psychological Falling Game</p>
+        <p>Created by Sumedh</p>
+      </div>
+
+      <button class="backBtn">Back</button>
+    </div>
+  </div>
+
+  <!-- LEVEL SELECT -->
+  <div id="levels" class="screen">
+    <div class="card">
+      <h2>Select Level</h2>
+
+      <div class="levels-grid">
+        <button class="level">1</button>
+        <button class="level">2</button>
+        <button class="level">3</button>
+        <button class="level">4</button>
+        <button class="level">5</button>
+        <button class="level">6</button>
+        <button class="level">7</button>
+        <button class="level">8</button>
+        <button class="level">9</button>
+      </div>
+
+      <button class="backBtn">Back</button>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="game" class="screen">
+    <div class="game-wrapper">
+      <div class="game-header">
+        <div class="lives">❤️❤️❤️</div>
+        <div class="stars">
+          <span class="star-ui" data-index="0">★</span>
+          <span class="star-ui" data-index="1">★</span>
+          <span class="star-ui" data-index="2">★</span>
+        </div>
+        <div class="hint">?</div>
+      </div>
+
+      <div id="gameContainer">
+        <canvas id="gameCanvas" width="380" height="600"></canvas>
+      </div>
+    </div>
+  </div>
+<script type="module" src="js/main.js"></script>    
+</body>
+</html>
