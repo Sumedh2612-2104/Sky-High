@@ -7,8 +7,8 @@ export const player = {
   height: 40,
   velocityY: 0,
   speedX: 1,
-  gravity: 0.4,
-  jumpForce: -10,
+  gravity: 0.6,
+  jumpForce: -11,
 
   isOnGround: false
 };
@@ -26,64 +26,51 @@ export function resetPlayer(startX, startY) {
 // Draw stick character
 export function drawPlayer(ctx, cameraY, timestamp) {
   const screenY = player.y - cameraY;
-  const centerX = player.x + player.width / 2;
-  const topY = screenY;
+  const x = player.x;
+  const y = screenY;
 
   const t = timestamp * 0.01;
 
-  // Animate ONLY when actually moving AND on ground
-  const animate = player.isMoving && player.isOnGround;
-
-  const legSwing = animate ? Math.sin(t * 8) * 4 : 0;
-  const armSwing = animate ? Math.sin(t * 8) * 3 : 0;
 
   ctx.save();
-  ctx.lineWidth = 8;
-  ctx.lineCap = "round";
-  ctx.strokeStyle = "white";
-  ctx.fillStyle = "white";
 
-  // ===== HEAD =====
-  ctx.beginPath();
-  ctx.ellipse(centerX, topY + 7, 4, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
+  // Flip if facing left
+  if (player.facingLeft) {
+    ctx.translate(x + player.width, 0);
+    ctx.scale(-1, 1);
+  } else {
+    ctx.translate(x, 0);
+  }
 
-  // Eyes
-  ctx.fillStyle = "black";
-  ctx.beginPath();
-  ctx.arc(centerX - 2, topY + 7, 1, 0, Math.PI * 2);
-  ctx.arc(centerX + 2, topY + 7, 1, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.strokeStyle = "white";
+ 
 
   // ===== BODY =====
-  ctx.beginPath();
-  ctx.moveTo(centerX, topY + 20);
-  ctx.lineTo(centerX, topY + 24);
-  ctx.stroke();
+  ctx.fillStyle = "white"; // blue outfit
+  ctx.fillRect(8, y + 12, 16, 20);
 
-  // ===== ARMS =====
-  ctx.beginPath();
-  ctx.moveTo(centerX, topY + 18);
-  ctx.lineTo(centerX - 8, topY + 20 + armSwing);
-  ctx.stroke();
+  // ===== HEAD =====
+  ctx.fillStyle = "white"; // skin
+  ctx.fillRect(10, y, 12, 12);
 
-  ctx.beginPath();
-  ctx.moveTo(centerX, topY + 18);
-  ctx.lineTo(centerX + 8, topY + 20 - armSwing);
-  ctx.stroke();
+  // ===== EYES =====
+  ctx.fillStyle = "black";
+  ctx.fillRect(13, y + 4, 2, 2);
+  ctx.fillRect(19, y + 4, 2, 2);
+
+  // ===== ARMS (STATIC) =====
+  ctx.fillStyle = "#fafbfd";
+  ctx.fillRect(4, y + 14, 4, 14);
+  ctx.fillRect(24, y + 14, 4, 14);
 
   // ===== LEGS =====
-  ctx.beginPath();
-  ctx.moveTo(centerX, topY + 26);
-  ctx.lineTo(centerX - 5, topY + 36 + legSwing);
-  ctx.stroke();
+  // ===== LEGS (Animated While Moving) =====
+const legSwing = player.isMoving && player.isOnGround
+  ? Math.sin(timestamp * 0.02) * 4
+  : 0;
 
-  ctx.beginPath();
-  ctx.moveTo(centerX, topY + 26);
-  ctx.lineTo(centerX + 5, topY + 36 - legSwing);
-  ctx.stroke();
+ctx.fillStyle = "#fafbfd";
+ctx.fillRect(10, y + 32 + legSwing, 5, 14);
+ctx.fillRect(17, y + 32 - legSwing, 5, 14);
 
   ctx.restore();
 }

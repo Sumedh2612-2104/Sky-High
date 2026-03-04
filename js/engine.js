@@ -29,6 +29,7 @@ let stars = [];
 let score = 0;
 let cameraY = 0;
 let keys = {};
+let jumpBuffer = 0;
 let goal = null;
 let gameState = "playing";
 
@@ -78,6 +79,7 @@ function setupInput() {
 
     // Jump
     if ((key === " " || key === "arrowup" || key === "w") && player.isOnGround) {
+      jumpBuffer =8;
       player.velocityY = player.jumpForce;
       player.isOnGround = false;
     }
@@ -139,6 +141,17 @@ function update() {
   if (gameState !== "playing") return;
 
   handleMovement();
+  // jump buffer 
+
+  if (jumpBuffer > 0) {
+  jumpBuffer--;
+
+  if (player.isOnGround) {
+    player.velocityY = player.jumpForce;
+    player.isOnGround = false;
+    jumpBuffer = 0;
+  }
+}
 
   // Apply gravity
   player.velocityY += player.gravity;
