@@ -24,44 +24,66 @@ export function resetPlayer(startX, startY) {
 
 
 // Draw stick character
-export function drawPlayer(ctx, cameraY) {
+export function drawPlayer(ctx, cameraY, timestamp) {
   const screenY = player.y - cameraY;
   const centerX = player.x + player.width / 2;
   const topY = screenY;
 
-  ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = 2;
+  const t = timestamp * 0.01;
 
-  // Head
+  // Animate ONLY when actually moving AND on ground
+  const animate = player.isMoving && player.isOnGround;
+
+  const legSwing = animate ? Math.sin(t * 8) * 4 : 0;
+  const armSwing = animate ? Math.sin(t * 8) * 3 : 0;
+
+  ctx.save();
+  ctx.lineWidth = 8;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "white";
+  ctx.fillStyle = "white";
+
+  // ===== HEAD =====
   ctx.beginPath();
-  ctx.arc(centerX, topY + 8, 6, 0, Math.PI * 2);
+  ctx.ellipse(centerX, topY + 7, 4, 5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = "black";
+  ctx.beginPath();
+  ctx.arc(centerX - 2, topY + 7, 1, 0, Math.PI * 2);
+  ctx.arc(centerX + 2, topY + 7, 1, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = "white";
+
+  // ===== BODY =====
+  ctx.beginPath();
+  ctx.moveTo(centerX, topY + 20);
+  ctx.lineTo(centerX, topY + 24);
   ctx.stroke();
 
-  // Body
-  ctx.beginPath();
-  ctx.moveTo(centerX, topY + 14);
-  ctx.lineTo(centerX, topY + 28);
-  ctx.stroke();
-
-  // Arms
+  // ===== ARMS =====
   ctx.beginPath();
   ctx.moveTo(centerX, topY + 18);
-  ctx.lineTo(centerX - 8, topY + 24);
+  ctx.lineTo(centerX - 8, topY + 20 + armSwing);
   ctx.stroke();
 
   ctx.beginPath();
   ctx.moveTo(centerX, topY + 18);
-  ctx.lineTo(centerX + 8, topY + 24);
+  ctx.lineTo(centerX + 8, topY + 20 - armSwing);
   ctx.stroke();
 
-  // Legs
+  // ===== LEGS =====
   ctx.beginPath();
-  ctx.moveTo(centerX, topY + 28);
-  ctx.lineTo(centerX - 6, topY + 38);
+  ctx.moveTo(centerX, topY + 26);
+  ctx.lineTo(centerX - 5, topY + 36 + legSwing);
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo(centerX, topY + 28);
-  ctx.lineTo(centerX + 6, topY + 38);
+  ctx.moveTo(centerX, topY + 26);
+  ctx.lineTo(centerX + 5, topY + 36 - legSwing);
   ctx.stroke();
+
+  ctx.restore();
 }

@@ -110,8 +110,17 @@ function setupInput() {
 
 // ===== MOVEMENT & CAMERA =====
 function handleMovement() {
-  if (keys["arrowleft"] || keys["a"]) player.x -= player.speedX;
-  if (keys["arrowright"] || keys["d"]) player.x += player.speedX;
+  player.isMoving = false;
+
+  if (keys["arrowleft"] || keys["a"]) {
+    player.x -= player.speedX;
+    player.isMoving = true;
+  }
+
+  if (keys["arrowright"] || keys["d"]) {
+    player.x += player.speedX;
+    player.isMoving = true;
+  }
 }
 
 function applyGravity() {
@@ -150,23 +159,23 @@ function update() {
 }
 
 // ===== DRAW SYSTEM =====
-function draw() {
+function draw(timestamp) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawPlatforms(ctx, platforms, cameraY);
   drawObstacles(ctx, obstacles, cameraY);
   drawStars();
   drawGoal();
-  drawPlayer(ctx, cameraY);
+  drawPlayer(ctx, cameraY , timestamp);
 
   if (gameState === "dead") drawOverlayScreen("You Died", "Press R to Retry");
   if (gameState === "won") drawOverlayScreen("Level Complete!", "Congratulations!");
 }
 
 // ===== GAME LOOP =====
-function gameLoop() {
+function gameLoop(timestamp) {
   update();
-  draw();
+  draw(timestamp);
   requestAnimationFrame(gameLoop);
 }
 
