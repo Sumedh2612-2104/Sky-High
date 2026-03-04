@@ -102,6 +102,18 @@
   pointer-events: auto;
 }
 
+/* Disable text selection */
+#touchControls button {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+#touchControls {
+  -webkit-touch-callout: none;
+}
+
 /* Show on mobile (adjust breakpoint as needed) */
 @media (max-width: 768px) {
   #touchControls {
