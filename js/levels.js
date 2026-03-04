@@ -46,46 +46,68 @@ export const levels = {
   },
     2: {
   gravity: 0.5,
-  playerStart: { x: 50, y: 380 },
+  playerStart: { x: 60, y: 540 },
 
   platforms: [
-    { x: 10, y: 440, width: 120, height: 10 },
-    { x: 150, y: 380, width: 100, height: 10 },
-    { x: 40, y: 320, width: 80, height: 10 },
-    { x: 250, y: 260, width: 100, height: 10 },
-    { x: 130, y: 200, width: 90, height: 10 },
-    { x: 210, y: 140, width: 120, height: 10 },
-    { x: 250, y: 80, width: 80, height: 10 },
-    { x: 130, y: 20, width: 90, height: 10 },
-    { x: 110, y: -40, width: 80, height: 10 },
-    { x: 210, y: -80, width: 85, height: 10 },
-    { x: 100, y: -130, width: 90, height: 10 },
-    { x: 230, y: -180, width: 100, height: 10 },
-    { x: 120, y: -230, width: 85, height: 10 },
-    { x: 220, y: -290, width: 90, height: 10 },
-    { x: 100, y: -350, width: 95, height: 10 },
-    { x: 210, y: -400, width: 100, height: 10 },
-    { x: 130, y: -460, width: 90, height: 10 },
-    { x: 220, y: -520, width: 100, height: 10 },
-    { x: 130, y: -580, width: 90, height: 10 },
-    { x: 210, y: -650, width: 100, height: 10 },
-    { x: 130, y: -700, width: 90, height: 10 },
+
+    // ===== BASE =====
+    { x: 0, y: 600, width: 200, height: 12 },
+
+    // ===== PERFECT 60px STEPS =====
+    { x: 220, y: 560, width: 100, height: 12 },
+    { x: 40,  y: 500, width: 100, height: 12 },
+    { x: 220, y: 440, width: 100, height: 12 },
+
+    // Moving (same height pattern)
+    {
+      x: 80,
+      y: 380,
+      width: 100,
+      height: 12,
+      move: true,
+      speed: 1.0,
+      direction: 1,
+      minX: 40,
+      maxX: 280
+    },
+
+    { x: 220, y: 320, width: 100, height: 12 },
+    { x: 40,  y: 260, width: 100, height: 12 },
+
+    {
+      x: 120,
+      y: 200,
+      width: 90,
+      height: 12,
+      move: true,
+      speed: 1.2,
+      direction: -1,
+      minX: 40,
+      maxX: 300
+    },
+
+    { x: 220, y: 140, width: 100, height: 12 },
+    { x: 60,  y: 80,  width: 100, height: 12 },
+
+    // Final jump
+    { x: 180, y: 20, width: 110, height: 12 }
   ],
 
   obstacles: [
-    { x: 180, y: 410, width: 10, height: 10 },  // bottom section
-    { x: 210, y: 280, width: 10, height: 10 },  // middle hazard
-    { x: 250, y: 60, width: 10, height: 10 },   // near mid
-    { x: 220, y: -500, width: 10, height: 10 }, // high hazard
+    // Mines force edge landings
+    { x: 260, y: 548, width: 12, height: 8 },
+    { x: 80,  y: 488, width: 12, height: 8 },
+    { x: 260, y: 308, width: 12, height: 8 },
+    { x: 200, y: 8, width: 12, height: 8}
   ],
 
   stars: [
-    { x: 250 + 80 / 2, y: 80 - 10, collected: false },   // early platform
-    { x: 210 + 100 / 2, y: -290 - 10, collected: false }, // mid challenge
-    { x: 130 + 90 / 2, y: -650 - 10, collected: false },  // near goal
+    { x: 260, y: 520 },
+    { x: 80,  y: 220 },
+    { x: 200, y: -10 }
   ],
 
-  goal: { x: 130, y: -720, width: 10, height: 10 },
+  goal: { x: 220, y: -40, width: 20, height: 20 }
 },
   3: {
   gravity: 0.5,

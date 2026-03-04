@@ -136,10 +136,27 @@ function updateCamera() {
   }
 }
 
+function updateMovingPlatforms() {
+  platforms.forEach(p => {
+    if (!p.move) {
+      p.vx = 0; 
+      return;
+    }
+
+    p.vx = p.speed * p.direction;
+    p.x += p.vx;
+
+    if (p.x <= p.minX || p.x + p.width >= p.maxX) {
+      p.direction *= -1;
+    }
+  });
+}
+
 // ===== UPDATE LOOP =====
 function update() {
   if (gameState !== "playing") return;
 
+  updateMovingPlatforms();
   handleMovement();
   // jump buffer 
 

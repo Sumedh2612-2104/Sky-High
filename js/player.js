@@ -6,7 +6,7 @@ export const player = {
   width: 30,
   height: 40,
   velocityY: 0,
-  speedX: 1,
+  speedX: 1.3,
   gravity: 0.6,
   jumpForce: -11,
 

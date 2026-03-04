@@ -47,10 +47,17 @@ export function checkPlatformCollision(player, platforms) {
       nextBottom >= platformTop;
 
     if (isFalling && horizontalOverlap && landing) {
+
       player.velocityY = 0;
       player.y = platformTop - player.height;
       player.isOnGround = true;
+
+      // ✅ ONLY move player if standing on moving platform
+      if (platform.move === true && platform.vx) {
+        player.x += platform.vx;
+      }
     }
+
   });
 }
 
